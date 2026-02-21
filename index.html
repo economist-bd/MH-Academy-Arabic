@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MH Academy - ভাষা ও ব্যাকরণ কুইজ</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .app-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-btn:hover, .option-btn:active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .result-message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+        .restart-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+            width: 100%;
+        }
+        #high-score {
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>MH Academy কুইজ</h1>
+    <div class="subtitle">আরবি ও বাংলা ভাষার ব্যাকরণ</div>
+    
+    <div class="stats">
+        <span>স্কোর: <span id="current-score">০</span></span>
+        <span>সর্বোচ্চ স্কোর: <span id="high-score">০</span></span>
+    </div>
+
+    <div id="quiz-area">
+        <div class="question-container">
+            <div class="question-text" id="question-text">প্রশ্ন লোড হচ্ছে...</div>
+            <div class="options" id="options-container">
+                </div>
+        </div>
+    </div>
+
+    <div class="result-message" id="result-message"></div>
+    <button class="restart-btn" id="restart-btn" onclick="startQuiz()">আবার খেলুন</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "বিশুদ্ধ আরবি ভাষায় মৌলিক স্বরধ্বনি বা হরকত কয়টি?",
+            options: ["৩টি", "৫টি", "৭টি", "১১টি"],
+            answer: 0
+        },
+        {
+            question: "পবিত্র কোরআন তেলাওয়াতে বা আরবি ভাষায় কোন ধ্বনির ব্যবহার নেই?",
+            options: ["আ-কার", "ই-কার", "এ-কার", "উ-কার"],
+            answer: 2
+        },
+        {
+            question: "আরবি শব্দ সাধারণত কয়টি মূল বর্ণ (Root letters) দিয়ে গঠিত হয়?",
+            options: ["২টি", "৩টি", "৪টি", "৫টি"],
+            answer: 1
+        },
+        {
+            question: "আরবি বচনের ক্ষেত্রে একবচন ও বহুবচনের মাঝে কোনটি রয়েছে?",
+            options: ["সমবচন", "দ্বিবচন", "অর্ধবচন", "মাঝারি বচন"],
+            answer: 1
+        },
+        {
+            question: "বাংলা ভাষায় কোনো জড় বস্তুর নিজস্ব লিঙ্গ না থাকলেও, আরবি ভাষায় প্রতিটি শব্দই কী হয়?",
+            options: ["ক্লীবলিঙ্গ", "উভয়লিঙ্গ", "পুংলিঙ্গ বা স্ত্রীলিঙ্গ", "কোনোটিই নয়"],
+            answer: 2
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let highScore = localStorage.getItem('mhAcademyHighScore') || 0;
+
+    // Convert English numbers to Bangla numbers
+    function toBanglaNum(num) {
+        const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return num.toString().split('').map(d => banglaDigits[d] || d).join('');
+    }
+
+    document.getElementById('high-score').innerText = toBanglaNum(highScore);
+
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('current-score').innerText = toBanglaNum(score);
+        document.getElementById('result-message').style.display = 'none';
+        document.getElementById('restart-btn').style.display = 'none';
+        document.getElementById('quiz-area').style.display = 'block';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQuestionIndex];
+        document.getElementById('question-text').innerText = `${toBanglaNum(currentQuestionIndex + 1)}. ${q.question}`;
+        
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+        
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedIndex) {
+        const correctIndex = questions[currentQuestionIndex].answer;
+        if (selectedIndex === correctIndex) {
+            score++;
+            document.getElementById('current-score').innerText = toBanglaNum(score);
+        }
+
+        currentQuestionIndex++;
+        
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-area').style.display = 'none';
+        const resultDiv = document.getElementById('result-message');
+        resultDiv.style.display = 'block';
+        
+        // Save to mobile/local storage
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('mhAcademyHighScore', highScore);
+            document.getElementById('high-score').innerText = toBanglaNum(highScore);
+            resultDiv.innerHTML = `অভিনন্দন! আপনি নতুন রেকর্ড করেছেন!<br>আপনার স্কোর: ${toBanglaNum(score)} / ${toBanglaNum(questions.length)}`;
+            resultDiv.style.color = "#28a745";
+        } else {
+            resultDiv.innerHTML = `কুইজ শেষ!<br>আপনার স্কোর: ${toBanglaNum(score)} / ${toBanglaNum(questions.length)}`;
+            resultDiv.style.color = var(--primary-color);
+        }
+        
+        document.getElementById('restart-btn').style.display = 'block';
+    }
+
+    // Initialize Quiz
+    startQuiz();
+</script>
+
+</body>
+</html>
