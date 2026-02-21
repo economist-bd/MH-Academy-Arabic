@@ -4,234 +4,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MH Academy - ভাষা ও ব্যাকরণ কুইজ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0056b3;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333;
+            --primary: #4F46E5; /* Indigo */
+            --secondary: #818CF8;
+            --success: #10B981; /* Green */
+            --danger: #EF4444; /* Red */
+            --bg: #EEF2FF;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 15px;
         }
+
         .app-container {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 30px;
+            max-width: 450px;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
             text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 5px;
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
         }
-        .subtitle {
+
+        .header p {
             font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
+            opacity: 0.9;
         }
-        .stats {
+
+        .stats-bar {
             display: flex;
             justify-content: space-between;
-            background: #e9ecef;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 14px;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 15px;
+            background: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
         }
-        .question-container {
-            margin-bottom: 20px;
+
+        .score-highlight { color: var(--primary); font-weight: 700; font-size: 18px;}
+        .high-score-highlight { color: #D97706; font-weight: 700; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #E5E7EB;
         }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-content {
+            padding: 25px 20px;
+        }
+
         .question-text {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            line-height: 1.4;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #111827;
         }
-        .options {
+
+        .options-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
+
         .option-btn {
-            background-color: #fff;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 12px 20px;
-            border-radius: 8px;
+            background-color: #F3F4F6;
+            border: 2px solid transparent;
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
             text-align: left;
+            transition: all 0.2s ease;
             -webkit-tap-highlight-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .option-btn:hover, .option-btn:active {
-            background-color: var(--primary-color);
-            color: #fff;
+
+        .option-btn:hover {
+            background-color: #E0E7FF;
+            border-color: var(--secondary);
         }
-        .result-message {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
+
+        .option-btn.correct {
+            background-color: #D1FAE5;
+            border-color: var(--success);
+            color: #065F46;
         }
-        .restart-btn {
-            background-color: #28a745;
+
+        .option-btn.wrong {
+            background-color: #FEE2E2;
+            border-color: var(--danger);
+            color: #991B1B;
+        }
+
+        /* Screens */
+        #start-screen, #result-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .btn-main {
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 20px;
-            display: none;
             width: 100%;
+            transition: background 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
         }
-        #high-score {
-            color: #d9534f;
+
+        .btn-main:hover {
+            background-color: #4338CA;
         }
+
+        .hidden { display: none !important; }
+
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .feedback-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>MH Academy কুইজ</h1>
-    <div class="subtitle">আরবি ও বাংলা ভাষার ব্যাকরণ</div>
-    
-    <div class="stats">
-        <span>স্কোর: <span id="current-score">০</span></span>
-        <span>সর্বোচ্চ স্কোর: <span id="high-score">০</span></span>
+    <div class="header">
+        <h1>MH Academy কুইজ</h1>
+        <p>আরবি ও বাংলা ভাষার তুলনামূলক ব্যাকরণ</p>
     </div>
 
-    <div id="quiz-area">
-        <div class="question-container">
+    <div id="start-screen">
+        <h2 style="margin-bottom: 15px; color: #1F2937;">স্বাগতম!</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">ভাষা ও ব্যাকরণের এই চমৎকার কুইজে অংশগ্রহণ করে নিজের জ্ঞান যাচাই করো।</p>
+        <div style="background: #FFFBEB; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #FCD34D;">
+            <p style="font-weight: 600; color: #B45309;">সর্বোচ্চ স্কোর: <span id="start-high-score">০</span></p>
+        </div>
+        <button class="btn-main" onclick="startQuiz()">কুইজ শুরু করুন</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="stats-bar">
+            <div>প্রশ্ন: <span id="q-counter">১/২৫</span></div>
+            <div>স্কোর: <span class="score-highlight" id="current-score">০</span></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="quiz-content">
             <div class="question-text" id="question-text">প্রশ্ন লোড হচ্ছে...</div>
-            <div class="options" id="options-container">
+            <div class="options-grid" id="options-container">
                 </div>
         </div>
     </div>
 
-    <div class="result-message" id="result-message"></div>
-    <button class="restart-btn" id="restart-btn" onclick="startQuiz()">আবার খেলুন</button>
+    <div id="result-screen" class="hidden">
+        <div class="result-icon" id="result-emoji">🏆</div>
+        <div class="feedback-text" id="result-feedback">অসাধারণ!</div>
+        <p style="font-size: 18px; margin-bottom: 10px; color: var(--text-muted);">আপনার চূড়ান্ত স্কোর:</p>
+        <h2 style="font-size: 40px; color: var(--primary); margin-bottom: 20px;" id="final-score">০ / ২৫</h2>
+        
+        <div style="background: #F0FDF4; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #BBF7D0;" id="new-record-msg" class="hidden">
+            <p style="font-weight: bold; color: #166534;">🎉 নতুন রেকর্ড তৈরি হয়েছে!</p>
+        </div>
+
+        <button class="btn-main" onclick="resetApp()">আবার খেলুন</button>
+    </div>
 </div>
 
 <script>
+    // ২৫টি গুরুত্বপূর্ণ ও বাছাইকৃত প্রশ্ন (১০০টি পূর্ণ করতে এখানে আরও প্রশ্ন যোগ করা যাবে)
     const questions = [
-        {
-            question: "বিশুদ্ধ আরবি ভাষায় মৌলিক স্বরধ্বনি বা হরকত কয়টি?",
-            options: ["৩টি", "৫টি", "৭টি", "১১টি"],
-            answer: 0
-        },
-        {
-            question: "পবিত্র কোরআন তেলাওয়াতে বা আরবি ভাষায় কোন ধ্বনির ব্যবহার নেই?",
-            options: ["আ-কার", "ই-কার", "এ-কার", "উ-কার"],
-            answer: 2
-        },
-        {
-            question: "আরবি শব্দ সাধারণত কয়টি মূল বর্ণ (Root letters) দিয়ে গঠিত হয়?",
-            options: ["২টি", "৩টি", "৪টি", "৫টি"],
-            answer: 1
-        },
-        {
-            question: "আরবি বচনের ক্ষেত্রে একবচন ও বহুবচনের মাঝে কোনটি রয়েছে?",
-            options: ["সমবচন", "দ্বিবচন", "অর্ধবচন", "মাঝারি বচন"],
-            answer: 1
-        },
-        {
-            question: "বাংলা ভাষায় কোনো জড় বস্তুর নিজস্ব লিঙ্গ না থাকলেও, আরবি ভাষায় প্রতিটি শব্দই কী হয়?",
-            options: ["ক্লীবলিঙ্গ", "উভয়লিঙ্গ", "পুংলিঙ্গ বা স্ত্রীলিঙ্গ", "কোনোটিই নয়"],
-            answer: 2
-        }
+        { q: "বিশুদ্ধ আরবি ভাষায় মৌলিক স্বরধ্বনি বা হরকত কয়টি?", options: ["৩টি", "৫টি", "৭টি", "১১টি"], ans: 0 },
+        { q: "পবিত্র কোরআন তেলাওয়াতে বা আরবি ভাষায় কোন ধ্বনির ব্যবহার নেই?", options: ["আ-কার", "ই-কার", "এ-কার", "উ-কার"], ans: 2 },
+        { q: "আরবি শব্দ সাধারণত কয়টি মূল বর্ণ (Root letters) দিয়ে গঠিত হয়?", options: ["২টি", "৩টি", "৪টি", "৫টি"], ans: 1 },
+        { q: "আরবি বচনের ক্ষেত্রে একবচন ও বহুবচনের মাঝে কোনটি রয়েছে?", options: ["সমবচন", "দ্বিবচন", "অর্ধবচন", "মাঝারি বচন"], ans: 1 },
+        { q: "বাংলা ভাষায় কোনো জড় বস্তুর নিজস্ব লিঙ্গ না থাকলেও, আরবি ভাষায় প্রতিটি শব্দই কী হয়?", options: ["ক্লীবলিঙ্গ", "উভয়লিঙ্গ", "পুংলিঙ্গ বা স্ত্রীলিঙ্গ", "কোনোটিই নয়"], ans: 2 },
+        { q: "নিচের কোন শব্দটি আরবি ভাষা থেকে বাংলায় আসেনি?", options: ["কলম", "আদালত", "চেয়ার", "দুনিয়া"], ans: 2 },
+        { q: "আরবি লেখার নিয়ম কোনটি?", options: ["বাম থেকে ডানে", "ডান থেকে বামে", "ওপর থেকে নিচে", "নিচে থেকে ওপরে"], ans: 1 },
+        { q: "তাজভিদের নিয়মে কোরআন স্পষ্ট করে পড়াকে কী বলে?", options: ["মাজহুল", "মারুফ", "মাখরাজ", "গুন্নাহ"], ans: 1 },
+        { q: "'কিতাব' শব্দের বহুবচন কী?", options: ["কিতাবানি", "কুতুব", "কিতাবাত", "কুতুবিয়া"], ans: 1 },
+        { q: "আরবি ব্যাকরণে 'যবর' (Fatha) কোন ধ্বনি তৈরি করে?", options: ["আ বা অ", "ই বা ঈ", "উ বা ঊ", "এ বা ঐ"], ans: 0 },
+        { q: "বাংলা ভাষায় স্বরবর্ণ কয়টি?", options: ["৯টি", "১০টি", "১১টি", "১২টি"], ans: 2 },
+        { q: "প্রাচীন কোন লিপি থেকে বাংলা লিপির উদ্ভব হয়েছে?", options: ["ব্রাহ্মী লিপি", "খরোষ্ঠী লিপি", "কুফী লিপি", "সেমিটিক লিপি"], ans: 0 },
+        { q: "আরবি ভাষার সাথে কোন প্রাচীন ভাষার মিল রয়েছে?", options: ["সংস্কৃত", "ল্যাটিন", "হিব্রু", "গ্রিক"], ans: 2 },
+        { q: "আমাদের উপমহাদেশে আরবি 'বিসমিল্লাহ'-কে ভুল উচ্চারণে কী বলা হতো?", options: ["বাসমাল্লাহ", "বেশমেল্লাহ", "বুসমিল্লাহ", "বিসমাল্লাহ"], ans: 1 },
+        { q: "আরবিতে 'কলম' শব্দটি কোন লিঙ্গ?", options: ["পুংলিঙ্গ", "স্ত্রীলিঙ্গ", "উভয়লিঙ্গ", "ক্লীবলিঙ্গ"], ans: 0 },
+        { q: "আরবি ব্যাকরণে 'যের' (Kasra) কোন ধ্বনি তৈরি করে?", options: ["আ", "ই", "উ", "ও"], ans: 1 },
+        { q: "কোরআন তেলাওয়াতের বিজ্ঞান বা নিয়মকানুনকে কী বলা হয়?", options: ["নাহু", "সরফ", "তাজভিদ", "বালাঘাত"], ans: 2 },
+        { q: "আরবিতে 'সায়্যারাহ' (গাড়ি) শব্দটি কোন লিঙ্গ?", options: ["পুংলিঙ্গ", "স্ত্রীলিঙ্গ", "উভয়লিঙ্গ", "ক্লীবলিঙ্গ"], ans: 1 },
+        { q: "বাংলা ব্যাকরণে বচন কয় প্রকার?", options: ["২ প্রকার", "৩ প্রকার", "৪ প্রকার", "৫ প্রকার"], ans: 0 },
+        { q: "আরবি 'ক-ত-ব' ধাতু থেকে গঠিত 'মাকতব' শব্দের অর্থ কী?", options: ["লেখক", "বই", "লেখার জায়গা", "সে লিখল"], ans: 2 },
+        { q: "ধ্রুপদী আরবিকে ইংরেজিতে কী বলা হয়?", options: ["Modern Arabic", "Classical Arabic", "Colloquial Arabic", "Slang Arabic"], ans: 1 },
+        { q: "আরবি ব্যাকরণে 'পেশ' (Damma) কোন ধ্বনি তৈরি করে?", options: ["আ", "ই", "উ", "এ"], ans: 2 },
+        { q: "বাংলা ভাষায় উপসর্গের কাজ কী?", options: ["নতুন শব্দ তৈরি করা", "বাক্য বড় করা", "অর্থ পরিবর্তন না করা", "বানান ঠিক করা"], ans: 0 },
+        { q: "আরবি ভাষায় শব্দ গঠনের মূল ভিত্তি কী?", options: ["উপসর্গ", "প্রত্যয়", "ধাতু বা Root", "সন্ধি"], ans: 2 },
+        { q: "নিচের কোনটি আরবি শব্দ?", options: ["আকাশ", "বাতাস", "তারিখ", "মাটি"], ans: 2 }
     ];
 
-    let currentQuestionIndex = 0;
+    let currentQIndex = 0;
     let score = 0;
+    let canClick = true;
     let highScore = localStorage.getItem('mhAcademyHighScore') || 0;
 
-    // Convert English numbers to Bangla numbers
-    function toBanglaNum(num) {
-        const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-        return num.toString().split('').map(d => banglaDigits[d] || d).join('');
+    // DOM Elements
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const currentScoreEl = document.getElementById('current-score');
+    const qCounterEl = document.getElementById('q-counter');
+    const progressBar = document.getElementById('progress-bar');
+
+    // Utility: Convert English to Bangla Numbers
+    function toBnNum(num) {
+        const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return num.toString().split('').map(d => bnDigits[d] || d).join('');
     }
 
-    document.getElementById('high-score').innerText = toBanglaNum(highScore);
+    // Initialize High Score on Load
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('start-high-score').innerText = toBnNum(highScore);
+    });
 
     function startQuiz() {
-        currentQuestionIndex = 0;
+        startScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+        currentQIndex = 0;
         score = 0;
-        document.getElementById('current-score').innerText = toBanglaNum(score);
-        document.getElementById('result-message').style.display = 'none';
-        document.getElementById('restart-btn').style.display = 'none';
-        document.getElementById('quiz-area').style.display = 'block';
+        updateStats();
         loadQuestion();
     }
 
-    function loadQuestion() {
-        const q = questions[currentQuestionIndex];
-        document.getElementById('question-text').innerText = `${toBanglaNum(currentQuestionIndex + 1)}. ${q.question}`;
-        
-        const optionsContainer = document.getElementById('options-container');
-        optionsContainer.innerHTML = '';
-        
-        q.options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(index);
-            optionsContainer.appendChild(btn);
-        });
+    function updateStats() {
+        currentScoreEl.innerText = toBnNum(score);
+        qCounterEl.innerText = `${toBnNum(currentQIndex + 1)}/${toBnNum(questions.length)}`;
+        const progressPercent = ((currentQIndex) / questions.length) * 100;
+        progressBar.style.width = `${progressPercent}%`;
     }
 
-    function checkAnswer(selectedIndex) {
-        const correctIndex = questions[currentQuestionIndex].answer;
+    function loadQuestion() {
+        canClick = true;
+        const currentQ = questions[currentQIndex];
+        questionText.innerText = currentQ.q;
+        optionsContainer.innerHTML = '';
+
+        currentQ.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span>${opt}</span> <span class="icon"></span>`;
+            btn.onclick = () => handleAnswer(btn, index, currentQ.ans);
+            optionsContainer.appendChild(btn);
+        });
+        updateStats();
+    }
+
+    function handleAnswer(selectedBtn, selectedIndex, correctIndex) {
+        if (!canClick) return;
+        canClick = false; // Prevent multiple clicks
+
+        const allBtns = optionsContainer.children;
+
+        // Visual Feedback
         if (selectedIndex === correctIndex) {
+            selectedBtn.classList.add('correct');
+            selectedBtn.querySelector('.icon').innerText = '✔';
             score++;
-            document.getElementById('current-score').innerText = toBanglaNum(score);
+            currentScoreEl.innerText = toBnNum(score);
+        } else {
+            selectedBtn.classList.add('wrong');
+            selectedBtn.querySelector('.icon').innerText = '✖';
+            // Show correct answer automatically
+            allBtns[correctIndex].classList.add('correct');
+            allBtns[correctIndex].querySelector('.icon').innerText = '✔';
         }
 
-        currentQuestionIndex++;
-        
-        if (currentQuestionIndex < questions.length) {
-            loadQuestion();
-        } else {
-            showResult();
-        }
+        // Wait 1.5 seconds then move to next
+        setTimeout(() => {
+            currentQIndex++;
+            if (currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 1500);
     }
 
     function showResult() {
-        document.getElementById('quiz-area').style.display = 'none';
-        const resultDiv = document.getElementById('result-message');
-        resultDiv.style.display = 'block';
+        quizScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
         
-        // Save to mobile/local storage
+        progressBar.style.width = '100%';
+        document.getElementById('final-score').innerText = `${toBnNum(score)} / ${toBnNum(questions.length)}`;
+
+        const newRecordMsg = document.getElementById('new-record-msg');
+        const resultEmoji = document.getElementById('result-emoji');
+        const resultFeedback = document.getElementById('result-feedback');
+
+        // Logic for feedback
+        const percentage = (score / questions.length) * 100;
+        if (percentage >= 80) {
+            resultEmoji.innerText = '🏆';
+            resultFeedback.innerText = 'অসাধারণ পারফরম্যান্স!';
+        } else if (percentage >= 50) {
+            resultEmoji.innerText = '👍';
+            resultFeedback.innerText = 'বেশ ভালো করেছেন!';
+        } else {
+            resultEmoji.innerText = '📚';
+            resultFeedback.innerText = 'আরও অনুশীলনের প্রয়োজন।';
+        }
+
+        // Local Storage / High Score Logic
         if (score > highScore) {
             highScore = score;
             localStorage.setItem('mhAcademyHighScore', highScore);
-            document.getElementById('high-score').innerText = toBanglaNum(highScore);
-            resultDiv.innerHTML = `অভিনন্দন! আপনি নতুন রেকর্ড করেছেন!<br>আপনার স্কোর: ${toBanglaNum(score)} / ${toBanglaNum(questions.length)}`;
-            resultDiv.style.color = "#28a745";
+            document.getElementById('start-high-score').innerText = toBnNum(highScore);
+            newRecordMsg.classList.remove('hidden');
         } else {
-            resultDiv.innerHTML = `কুইজ শেষ!<br>আপনার স্কোর: ${toBanglaNum(score)} / ${toBanglaNum(questions.length)}`;
-            resultDiv.style.color = var(--primary-color);
+            newRecordMsg.classList.add('hidden');
         }
-        
-        document.getElementById('restart-btn').style.display = 'block';
     }
 
-    // Initialize Quiz
-    startQuiz();
+    function resetApp() {
+        startScreen.classList.remove('hidden');
+        resultScreen.classList.add('hidden');
+        progressBar.style.width = '0%';
+    }
+
 </script>
 
 </body>
